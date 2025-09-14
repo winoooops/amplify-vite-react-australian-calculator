@@ -15,6 +15,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+.zed/*
 .idea
 .DS_Store
 *.suo
@@ -27,3 +28,10 @@ dist-ssr
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+
+# lock files
+yarn.lock
+
+# local agent files
+AGENTS.md
+CLAUDE.md
