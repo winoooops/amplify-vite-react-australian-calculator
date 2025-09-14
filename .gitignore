@@ -31,7 +31,6 @@ amplifyconfiguration*
 
 # lock files
 yarn.lock
-pacakge-lock.json
 
 # local agent files
 AGENTS.md
