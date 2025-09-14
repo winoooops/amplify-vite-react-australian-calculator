@@ -1,17 +1,48 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
-=========================================================================*/
+// Global tax dataset (shared per financial year)
+// Public access via API key (read/write defaults to public; tighten if needed).
 const schema = a.schema({
-  Todo: a
+  TaxConfig: a
     .model({
-      content: a.string(),
+      financialYearStart: a.integer(),
+      financialYearEnd: a.integer(),
+      version: a.string(),
+      lastUpdated: a.string(),
+      // Relationship: one TaxConfig has many TaxBrackets via TaxBracket.taxConfigId
+      brackets: a.hasMany('TaxBracket', 'taxConfigId'),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
+  // Normalized tax brackets belonging to a TaxConfig
+  TaxBracket: a
+    .model({
+      taxConfigId: a.id(), // FK -> TaxConfig.id
+      // Back-reference to parent TaxConfig
+      taxConfig: a.belongsTo('TaxConfig', 'taxConfigId'),
+      order: a.integer(),
+      lower: a.integer(),
+      upper: a.integer(), // omit when open-ended
+      rate: a.float(),
+      styleRef: a.string(),
+      label: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  // Per-user tax calculation record (inputs + computed KPIs)
+  // Requires signed-in user; links back to a TaxConfig by id.
+  UserTaxRecord: a
+    .model({
+      taxConfigId: a.string(),
+      version: a.string(),
+      createdAt: a.string(),
+      // Inputs limited to income only (custom typed JSON)
+      inputs: a.customType({
+        income: a.float(),
+      }),
+      results: a.json(),
+    })
+    .authorization((allow) => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -19,39 +50,30 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
+    // API key for public access to TaxConfig
     defaultAuthorizationMode: "apiKey",
-    // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
   },
 });
 
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
-
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
-
-/*
+/* Frontend usage (examples)
 "use client"
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
+const client = generateClient<Schema>();
+
+// List tax configs (public)
+// const { data: configs } = await client.models.TaxConfig.list();
+
+// Create a user tax record (must be signed in)
+// await client.models.UserTaxRecord.create({
+//   taxConfigId: "<dataset-id>",
+//   version: "1.0.0",
+//   createdAt: new Date().toISOString(),
+//   inputs: { income: 120000 },
+//   results: { estimatedTax: 0, netIncome: 0, averageTaxRate: 0 },
+// });
 */
-
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
-
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
-
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
