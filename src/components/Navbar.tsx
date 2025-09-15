@@ -1,8 +1,11 @@
 import { useAuthenticator } from "@aws-amplify/ui-react";
+import { useDisplayName } from "../hooks/useDisplayName";
 import { Link } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 
 function Navbar() {
-  const { signOut } = useAuthenticator();
+  const { signOut, user } = useAuthenticator();
+  const displayName = useDisplayName();
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -31,26 +34,12 @@ function Navbar() {
 
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="flex items-center">
+            {(displayName || user?.username) && (<h1>Hello, {displayName || user?.username}</h1>)}
             <button
               onClick={signOut}
               className="inline-flex items-center justify-center rounded-md h-9 w-9 px-0 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 md:flex"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
+              <LogOut />
               <span className="sr-only">Sign Out</span>
             </button>
           </div>

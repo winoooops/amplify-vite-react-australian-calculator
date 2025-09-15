@@ -21,7 +21,7 @@ declare module "@tanstack/react-router" {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Authenticator>
+    <Authenticator socialProviders={["google", "amazon"]}>
       <RouterProvider router={router} />
     </Authenticator>
   </React.StrictMode>
