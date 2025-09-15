@@ -34,10 +34,12 @@ function Navbar() {
 
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="flex items-center">
-            {(displayName || user?.username) && (<h1>Hello, {displayName || user?.username}</h1>)}
+            {(displayName || user?.username) && (
+              <h1>Hello, {displayName || user?.username}</h1>
+            )}
             <button
               onClick={signOut}
-              className="inline-flex items-center justify-center rounded-md h-9 w-9 px-0 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 md:flex"
+              className="cursor-pointer inline-flex items-center justify-center rounded-md h-9 w-9 px-0 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 md:flex"
             >
               <LogOut />
               <span className="sr-only">Sign Out</span>
