@@ -3,7 +3,7 @@ import Header from "./Header/Header";
 import IncomeInput from "./TaxResults/IncomeInput";
 import TaxRateBracket from "./TaxRateTable/TaxRateBrackets";
 import TaxRateInfo from "./TaxRateTable/TaxRateInfo";
-import TaxResults from "./TaxResults/MetricCards";
+import MatrixCards from "./TaxResults/MetricCards";
 import SectionTitle from "./SectionTitle";
 import { DollarSign, TrendingUp, Info } from "lucide-react";
 
@@ -30,7 +30,7 @@ function Calculator() {
             </div>
           </SectionTitle>
           <IncomeInput />
-          <TaxResults />
+          <MatrixCards />
         </div>
       </main>
       <Footer>
