@@ -1,4 +1,4 @@
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "../../SectionTitle";
 import { DollarSign } from "lucide-react";
 import IncomeInput from "./IncomeInput";
 import MetricCards from "./MetricCards";

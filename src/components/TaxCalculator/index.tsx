@@ -1,6 +1,6 @@
 import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
-import SectionTitle from "./SectionTitle";
+import SectionTitle from "../SectionTitle";
 import TaxResults from "./TaxResults";
 import TaxRateTable from "./TaxRateTable";
 import { Info } from "lucide-react";

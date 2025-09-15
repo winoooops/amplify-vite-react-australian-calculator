@@ -1,4 +1,4 @@
-import SectionTitle from "../SectionTitle";
+import SectionTitle from "../../SectionTitle";
 import { TrendingUp } from "lucide-react";
 import TaxRateBrackets from "./TaxRateBrackets";
 import TaxRateInfo from "./TaxRateInfo";
