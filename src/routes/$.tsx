@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Calculator from "../components/TaxCalculator/Calculator";
+import TaxCalculator from "../components/TaxCalculator";
 
 export const Route = createFileRoute("/$")({
-  component: Calculator
+  component: TaxCalculator,
 });
