@@ -1,4 +1,4 @@
-function Configuration() {
+function TaxConfiguration() {
   return (
     <div>
       <h1>Tax Configuration</h1>
@@ -6,4 +6,4 @@ function Configuration() {
   );
 }
 
-export default Configuration;
+export default TaxConfiguration;
