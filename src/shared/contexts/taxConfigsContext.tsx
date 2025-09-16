@@ -1,11 +1,31 @@
-import { useCallback, useState } from "react";
-import { TaxConfigHistoryItem } from "../components/TaxConfiguration/ConfigHistory";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import { generateClient } from "aws-amplify/data";
-import { Schema } from "../../amplify/data/resource";
+import { Schema } from "../../../amplify/data/resource";
+import type { TaxConfigHistoryItem } from "../../components/TaxConfiguration/ConfigHistory";
+
+type TaxConfigsContextType = {
+  history: TaxConfigHistoryItem[];
+  setHistory: (history: TaxConfigHistoryItem[]) => void;
+  isHistoryLoading: boolean;
+  isDeleting: boolean;
+  historyError: string | null;
+  fetchHistory: () => void;
+  handleDeleteConfig: (configId: string) => void;
+};
+
+export const TaxConfigsContext = createContext<TaxConfigsContextType>({
+  history: [],
+  setHistory: () => {},
+  isHistoryLoading: false,
+  isDeleting: false,
+  historyError: null,
+  fetchHistory: () => {},
+  handleDeleteConfig: () => {},
+});
 
 const client = generateClient<Schema>();
 
-export function useConfigHistory() {
+export function TaxConfigsProvider({ children }: { children: React.ReactNode }) {
   const [history, setHistory] = useState<TaxConfigHistoryItem[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -116,12 +136,29 @@ export function useConfigHistory() {
     }
   };
 
-  return {
-    history,
-    isHistoryLoading,
-    isDeleting,
-    historyError,
-    fetchHistory,
-    handleDeleteConfig,
-  }
+  return (
+    <TaxConfigsContext.Provider
+      value={{
+        history,
+        setHistory,
+        isHistoryLoading,
+        isDeleting,
+        historyError,
+        fetchHistory,
+        handleDeleteConfig,
+      }}
+    >
+      {children}
+    </TaxConfigsContext.Provider>
+  );
 }
+
+export function useTaxConfigs() {
+  const ctx = useContext(TaxConfigsContext);
+  if (!ctx) {
+    throw new Error("useTaxConfigs must be used within TaxConfigsProvider");
+  }
+  return ctx;
+}
+
+

@@ -1,21 +1,34 @@
 import { useEffect } from "react";
 import { Schema } from "../../../../amplify/data/resource";
 import HistoryCard from "./HistoryCard";
-import { useConfigHistory } from "../../../hooks/useConfigHistory";
 import { History } from "lucide-react";
 import SectionTitle from "../../SectionTitle";
+import { generateClient } from "aws-amplify/api";
+import { useContext } from "react";
+import { TaxConfigsContext } from "../../../shared/contexts/taxConfigsContext";
 
 export type TaxConfigHistoryItem = Schema["TaxConfig"]["type"] & {
   bracketCount: number;
 };
 
-function ConfigHistory() {
-  const { history, isHistoryLoading, isDeleting, historyError, fetchHistory, handleDeleteConfig } = useConfigHistory();
+const client = generateClient<Schema>();
+
+function ConfigHistory({ }) {
+  const { history, setHistory, isHistoryLoading, isDeleting, historyError, fetchHistory, handleDeleteConfig } = useContext(TaxConfigsContext);
 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
+  useEffect(() => {
+    client.models.TaxConfig.observeQuery().subscribe({
+      next: (data) => setHistory(data.items.map((history) => ({...history, bracketCount: history.brackets.length }))),
+    })
+  },[]);
+
+  
+
+  console.log(history);
   if (history.length === 0) { return null; }
 
   return (

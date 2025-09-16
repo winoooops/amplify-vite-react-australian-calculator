@@ -9,7 +9,8 @@ import { TaxConfigFormData } from "../../shared/types";
 import SectionTitle from "../SectionTitle";
 import { Bolt } from "lucide-react";
 import ConfigHistory from "./ConfigHistory";
-import { useConfigHistory } from "../../hooks/useConfigHistory";
+import { useContext } from "react";
+import { TaxConfigsContext } from "../../shared/contexts/taxConfigsContext";
 
 const client = generateClient<Schema>();
 
@@ -41,7 +42,7 @@ function TaxConfiguration() {
     getValues
   } = methods;
 
-  const { fetchHistory } = useConfigHistory();
+  const { fetchHistory } = useContext(TaxConfigsContext);
 
   const { fields, append, remove } = useFieldArray({
     control,
