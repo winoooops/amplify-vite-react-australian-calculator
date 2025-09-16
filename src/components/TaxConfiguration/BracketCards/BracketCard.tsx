@@ -2,22 +2,24 @@ import { UseFormRegister, UseFormWatch } from "react-hook-form";
 import { ReactNode } from "react";
 import { TaxConfigFormData } from "../../../shared/types";
 
+type Props = Readonly<{
+  register: UseFormRegister<TaxConfigFormData>;
+  index: number;
+  watch: UseFormWatch<TaxConfigFormData>;
+  children: ReactNode;
+}>;
+
 function BracketCard({
   register,
   index,
   watch,
   children,
-}: {
-  register: UseFormRegister<TaxConfigFormData>;
-  index: number;
-  watch: UseFormWatch<TaxConfigFormData>;
-  children: ReactNode;
-}) {
+}: Props) {
   return (
     <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-50 to-slate-100 border-2 border-slate-200/50 hover:shadow-md transition-all duration-300">
       <div className="flex justify-between items-start mb-6">
         <h4 className="text-lg font-semibold text-slate-800">
-          Bracket {index}
+          Bracket {index + 1}
         </h4>
         {children}
       </div>
@@ -129,8 +131,8 @@ function BracketCard({
           <div className="px-4 py-3 bg-gradient-to-r from-slate-100 to-slate-50 border-2 border-slate-200 rounded-2xl text-slate-700 font-medium">
             {watch(`brackets.${index}.rate`) !== undefined
               ? `${(Number(watch(`brackets.${index}.rate`)) * 100).toFixed(
-                  1
-                )}% tax bracket`
+                1
+              )}% tax bracket`
               : "Enter rate to see preview"}
           </div>
         </div>

@@ -1,0 +1,127 @@
+import { useCallback, useState } from "react";
+import { TaxConfigHistoryItem } from "../components/TaxConfiguration/ConfigHistory";
+import { generateClient } from "aws-amplify/data";
+import { Schema } from "../../amplify/data/resource";
+
+const client = generateClient<Schema>();
+
+export function useConfigHistory() {
+  const [history, setHistory] = useState<TaxConfigHistoryItem[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+
+  const fetchHistory = useCallback(async () => {
+    try {
+      setHistoryError(null);
+      setIsHistoryLoading(true);
+
+      const { data: configs, errors } = await client.models.TaxConfig.list();
+
+      if (errors?.length) {
+        throw new Error(errors.map((error) => error.message).join(", "));
+      }
+
+      const historyWithCounts = await Promise.all(
+        (configs ?? []).map(async (config) => {
+          try {
+            const { data: brackets } = await client.models.TaxBracket.list({
+              filter: { taxConfigId: { eq: config.id } },
+            });
+
+            return {
+              ...config,
+              bracketCount: brackets?.length ?? 0,
+            };
+          } catch (error) {
+            console.error("Error loading tax brackets:", error);
+            return {
+              ...config,
+              bracketCount: 0,
+            };
+          }
+        })
+      );
+
+      historyWithCounts.sort((a, b) => {
+        const aDate = new Date(a.lastUpdated ?? "").getTime();
+        const bDate = new Date(b.lastUpdated ?? "").getTime();
+
+        const safeADate = Number.isNaN(aDate) ? 0 : aDate;
+        const safeBDate = Number.isNaN(bDate) ? 0 : bDate;
+
+        return safeBDate - safeADate;
+      });
+
+      setHistory(historyWithCounts);
+    } catch (error) {
+      console.error("Error loading tax configuration history:", error);
+      setHistoryError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load tax configuration history"
+      );
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  }, []);
+
+  const handleDeleteConfig = async (configId: string) => {
+    if (!configId) {
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Delete this tax configuration? This action can't be undone."
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setHistoryError(null);
+
+    try {
+      const { data: brackets, errors } = await client.models.TaxBracket.list({
+        filter: { taxConfigId: { eq: configId } },
+      });
+
+      if (errors?.length) {
+        throw new Error(errors.map((error) => error.message).join(", "));
+      }
+
+      const deletePromises: Promise<unknown>[] = [];
+
+      (brackets ?? []).forEach((bracket) => {
+        if (bracket?.id) {
+          deletePromises.push(client.models.TaxBracket.delete({ id: bracket.id }));
+        }
+      });
+
+      await Promise.all(deletePromises);
+
+      await client.models.TaxConfig.delete({ id: configId });
+
+      await fetchHistory();
+    } catch (error) {
+      console.error("Error deleting tax configuration:", error);
+      setHistoryError(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete tax configuration"
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return {
+    history,
+    isHistoryLoading,
+    isDeleting,
+    historyError,
+    fetchHistory,
+    handleDeleteConfig,
+  }
+}

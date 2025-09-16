@@ -1,18 +1,19 @@
-import { FieldErrors, UseFormRegister } from "react-hook-form";
-import { TaxConfigFormData } from ".";
+import { useFormContext } from "react-hook-form";
+import { TaxConfigFormData } from "../../shared/types";
 
-function MetaCard({
-  register,
-  errors,
-}: {
-  register: UseFormRegister<TaxConfigFormData>;
-  errors: FieldErrors<TaxConfigFormData>;
-}) {
+function MetaCard({ onLoadTestData }: { onLoadTestData: () => void }) {
+  const { register, formState: { errors } } = useFormContext<TaxConfigFormData>();
+
   return (
     <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200/50 hover:shadow-lg transition-all duration-300">
-      <h3 className="text-xl font-semibold text-slate-800 mb-6">
-        Tax Configuration Details
-      </h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-slate-800 mb-6">
+          Tax Configuration Details
+        </h3>
+        <button type="button" onClick={onLoadTestData}
+          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-2xl hover:from-blue-600 hover:to-blue-700 hover:shadow-lg transition-all duration-300"
+        >Add Test Data</button>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
