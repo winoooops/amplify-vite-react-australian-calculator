@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormWatch } from "react-hook-form";
-import { TaxConfigFormData } from "..";
 import { ReactNode } from "react";
+import { TaxConfigFormData } from "../../../shared/types";
 
 function BracketCard({
   register,

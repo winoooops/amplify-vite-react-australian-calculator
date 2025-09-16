@@ -1,30 +1,17 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/data";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { Schema } from "../../../amplify/data/resource";
 import MetaCard from "./MetaCard";
 import ActionButtons from "./ActionButtons";
 import BracketCards from "./BracketCards";
+import { TaxConfigFormData } from "../../shared/types";
 
 const client = generateClient<Schema>();
 
-export interface TaxBracketFormData {
-  id?: string;
-  order: number;
-  lower: number;
-  upper?: number;
-  rate: number;
-  styleRef: string;
-  label?: string;
-}
-
-export interface TaxConfigFormData {
-  financialYearStart: number;
-  financialYearEnd: number;
-  version: string;
-  lastUpdated: string;
-  brackets: TaxBracketFormData[];
-}
+type TaxConfigHistoryItem = Schema["TaxConfig"]["type"] & {
+  bracketCount: number;
+};
 
 function TaxConfiguration() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +19,10 @@ function TaxConfiguration() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [history, setHistory] = useState<TaxConfigHistoryItem[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const {
     register,
@@ -52,7 +43,6 @@ function TaxConfiguration() {
           upper: 18200,
           rate: 0.0,
           styleRef: "green",
-          label: "0% to $18,200",
         },
         {
           order: 2,
@@ -60,7 +50,6 @@ function TaxConfiguration() {
           upper: 45000,
           rate: 0.19,
           styleRef: "blue",
-          label: "19% to $45,000",
         },
         {
           order: 3,
@@ -68,7 +57,6 @@ function TaxConfiguration() {
           upper: 120000,
           rate: 0.325,
           styleRef: "orange",
-          label: "32.5% to $120,000",
         },
         {
           order: 4,
@@ -76,14 +64,12 @@ function TaxConfiguration() {
           upper: 180000,
           rate: 0.37,
           styleRef: "red",
-          label: "37% to $180,000",
         },
         {
           order: 5,
           lower: 180001,
           rate: 0.45,
           styleRef: "purple",
-          label: "45%+",
         },
       ],
     },
@@ -93,6 +79,55 @@ function TaxConfiguration() {
     control,
     name: "brackets",
   });
+
+  const fetchHistory = useCallback(async () => {
+    try {
+      setHistoryError(null);
+      setIsHistoryLoading(true);
+
+      const { data: configs, errors } = await client.models.TaxConfig.list();
+
+      if (errors?.length) {
+        throw new Error(errors.map((error) => error.message).join(", "));
+      }
+
+      const historyWithCounts = await Promise.all(
+        (configs ?? []).map(async (config) => {
+          try {
+            const { data: brackets } = await client.models.TaxBracket.list({
+              filter: { taxConfigId: { eq: config.id } },
+            });
+
+            return {
+              ...config,
+              bracketCount: brackets?.length ?? 0,
+            };
+          } catch (error) {
+            console.error("Error loading tax brackets:", error);
+            return {
+              ...config,
+              bracketCount: 0,
+            };
+          }
+        })
+      );
+
+      setHistory(historyWithCounts);
+    } catch (error) {
+      console.error("Error loading tax configuration history:", error);
+      setHistoryError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load tax configuration history"
+      );
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   const onSubmit: SubmitHandler<TaxConfigFormData> = async (data) => {
     setIsSubmitting(true);
@@ -121,7 +156,6 @@ function TaxConfiguration() {
           upper: bracket.upper,
           rate: bracket.rate,
           styleRef: bracket.styleRef,
-          label: bracket.label || `${bracket.rate * 100}% tax bracket`,
         })
       );
 
@@ -131,6 +165,8 @@ function TaxConfiguration() {
         type: "success",
         message: `Successfully created tax configuration for ${data.financialYearStart}-${data.financialYearEnd} with ${data.brackets.length} tax brackets`,
       });
+
+      await fetchHistory();
     } catch (error) {
       console.error("Error creating tax configuration:", error);
       setSubmitStatus({
@@ -157,7 +193,6 @@ function TaxConfiguration() {
       upper: newLower + 10000,
       rate: 0.1,
       styleRef: "default",
-      label: `${(0.1 * 100).toFixed(0)}% tax bracket`,
     });
   };
 
