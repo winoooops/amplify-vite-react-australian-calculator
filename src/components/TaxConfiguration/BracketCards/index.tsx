@@ -1,6 +1,8 @@
 import { FieldArrayWithId, useFormContext } from "react-hook-form";
 import BracketCard from "./BracketCard";
 import { TaxConfigFormData } from "../../../shared/types";
+import { Brackets } from "lucide-react";
+import SectionTitle from "../../SectionTitle";
 
 type Props = Readonly<{
   fields: FieldArrayWithId<TaxConfigFormData, "brackets", "id">[];
@@ -14,9 +16,9 @@ function BracketCards({ fields, onAddBracket, onRemoveBracket }: Props) {
   return (
     <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200/50 hover:shadow-lg transition-all duration-300">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-slate-800">
-          Tax Brackets
-        </h3>
+        <SectionTitle title="Tax Brackets">
+          <Brackets />        
+        </SectionTitle>
         <button
           type="button"
           onClick={onAddBracket}

@@ -1,5 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { TaxConfigFormData } from "../../shared/types";
+import SectionTitle from "../SectionTitle";
+import { CalendarRange } from "lucide-react";
 
 function MetaCard({ onLoadTestData }: { onLoadTestData: () => void }) {
   const { register, formState: { errors } } = useFormContext<TaxConfigFormData>();
@@ -7,9 +9,9 @@ function MetaCard({ onLoadTestData }: { onLoadTestData: () => void }) {
   return (
     <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200/50 hover:shadow-lg transition-all duration-300">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-slate-800 mb-6">
-          Tax Configuration Details
-        </h3>
+        <SectionTitle title="Tax Configuration Details">
+          <CalendarRange />
+        </SectionTitle>
         <button type="button" onClick={onLoadTestData}
           className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-2xl hover:from-blue-600 hover:to-blue-700 hover:shadow-lg transition-all duration-300"
         >Add Test Data</button>
