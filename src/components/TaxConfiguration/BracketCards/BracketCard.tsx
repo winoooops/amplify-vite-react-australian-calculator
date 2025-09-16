@@ -34,6 +34,7 @@ function BracketCard({
             {...register(`brackets.${index}.order`, {
               required: "Order is required",
               min: { value: 1, message: "Order must be at least 1" },
+              valueAsNumber: true
             })}
             className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
           />
@@ -51,6 +52,7 @@ function BracketCard({
                 value: 0,
                 message: "Lower bound must be non-negative",
               },
+              valueAsNumber: true
             })}
             className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
           />
@@ -62,7 +64,9 @@ function BracketCard({
           </label>
           <input
             type="number"
-            {...register(`brackets.${index}.upper`)}
+            {...register(`brackets.${index}.upper`, {
+              valueAsNumber: true
+            })}
             className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
           />
         </div>
@@ -78,6 +82,7 @@ function BracketCard({
               required: "Tax rate is required",
               min: { value: 0, message: "Rate must be non-negative" },
               max: { value: 1, message: "Rate must not exceed 1" },
+              valueAsNumber: true
             })}
             className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
           />
