@@ -1,5 +1,5 @@
 import { useAuthenticator } from "@aws-amplify/ui-react";
-import { useDisplayName } from "../hooks/useDisplayName";
+import { useDisplayName } from "../shared/hooks/useDisplayName";
 import { Link } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 
