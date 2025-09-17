@@ -1,6 +1,7 @@
 import { TaxBracket, TaxBracketFormData } from "./taxBracket";
 
 export interface TaxConfig {
+    id: string;
     financialYearStart: number;
     financialYearEnd: number;
     version: string;

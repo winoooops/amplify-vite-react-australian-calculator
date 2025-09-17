@@ -1,18 +1,16 @@
 import { useFormContext } from "react-hook-form";
-import { TaxConfigFormData } from "../../../shared/types";
+import { TaxConfig } from "../../../shared/types";
 
 type Props = Readonly<{
-  config: TaxConfigFormData;
+  config: TaxConfig;
   isDeleting: boolean;
   handleDeleteConfig: (id: string) => void;
 }>;
 
 function HistoryCard({ config, isDeleting, handleDeleteConfig }: Props) {
-  const { reset } = useFormContext<TaxConfigFormData>();
+  const { reset } = useFormContext<TaxConfig>();
 
-  const onLoad = (config: TaxConfigFormData) => {
-    console.log("should load config below");
-    console.log(config);
+  const onLoad = (config: TaxConfig) => {
     reset(config);
   }
 

@@ -102,9 +102,7 @@ function TaxConfiguration() {
   };
 
   const addBracket = () => {
-    console.log("addBracket");
     const brackets = getValues("brackets");
-    console.log("computedBrackets", brackets);
     const lastBracket = brackets[brackets.length - 1];
     const newOrder = lastBracket?.order ? lastBracket.order + 1 : 1;
     const newLower =
