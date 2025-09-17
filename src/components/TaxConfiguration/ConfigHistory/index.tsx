@@ -1,16 +1,10 @@
-import { useEffect } from "react";
-import { Schema } from "../../../../amplify/data/resource";
+import { useEffect, useContext } from "react";
 import HistoryCard from "./HistoryCard";
 import { History } from "lucide-react";
 import SectionTitle from "../../SectionTitle";
-import { useContext } from "react";
 import { TaxConfigsContext } from "../../../shared/contexts/taxConfigsContext";
 
-export type TaxConfigHistoryItem = Schema["TaxConfig"]["type"] & {
-  bracketCount: number;
-};
-
-function ConfigHistory({ }) {
+function ConfigHistory() {
   const { history, isHistoryLoading, isDeleting, historyError, fetchHistory, handleDeleteConfig } = useContext(TaxConfigsContext);
 
   useEffect(() => {

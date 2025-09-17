@@ -1,12 +1,21 @@
-import { TaxConfigHistoryItem } from ".";
+import { useFormContext } from "react-hook-form";
+import { TaxConfigFormData } from "../../../shared/types";
 
 type Props = Readonly<{
-  config: TaxConfigHistoryItem;
+  config: TaxConfigFormData;
   isDeleting: boolean;
   handleDeleteConfig: (id: string) => void;
 }>;
 
 function HistoryCard({ config, isDeleting, handleDeleteConfig }: Props) {
+  const { reset } = useFormContext<TaxConfigFormData>();
+
+  const onLoad = (config: TaxConfigFormData) => {
+    console.log("should load config below");
+    console.log(config);
+    reset(config);
+  }
+
   return (
     <div
       className="p-7 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -21,8 +30,13 @@ function HistoryCard({ config, isDeleting, handleDeleteConfig }: Props) {
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
           <span className="inline-flex items-center px-4 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">
-            {config.bracketCount} tax brackets
+            {config.brackets.length} tax brackets
           </span>
+          <button type="button" onClick={() => onLoad(config)}
+            className="px-5 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
+          >
+            Load
+          </button>
           <button
             type="button"
             onClick={() => handleDeleteConfig(config.id)}

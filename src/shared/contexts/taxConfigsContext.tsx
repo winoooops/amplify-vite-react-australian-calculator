@@ -1,11 +1,11 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 import { generateClient } from "aws-amplify/data";
 import { Schema } from "../../../amplify/data/resource";
-import type { TaxConfigHistoryItem } from "../../components/TaxConfiguration/ConfigHistory";
+import { TaxConfig } from "../types";
 
 type TaxConfigsContextType = {
-  history: TaxConfigHistoryItem[];
-  setHistory: (history: TaxConfigHistoryItem[]) => void;
+  history: TaxConfig[];
+  setHistory: (history: TaxConfig[]) => void;
   isHistoryLoading: boolean;
   isDeleting: boolean;
   historyError: string | null;
@@ -15,18 +15,18 @@ type TaxConfigsContextType = {
 
 export const TaxConfigsContext = createContext<TaxConfigsContextType>({
   history: [],
-  setHistory: () => {},
+  setHistory: () => { },
   isHistoryLoading: false,
   isDeleting: false,
   historyError: null,
-  fetchHistory: () => {},
-  handleDeleteConfig: () => {},
+  fetchHistory: () => { },
+  handleDeleteConfig: () => { },
 });
 
 const client = generateClient<Schema>();
 
 export function TaxConfigsProvider({ children }: { children: React.ReactNode }) {
-  const [history, setHistory] = useState<TaxConfigHistoryItem[]>([]);
+  const [history, setHistory] = useState<TaxConfig[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [historyError, setHistoryError] = useState<string | null>(null);
@@ -36,44 +36,30 @@ export function TaxConfigsProvider({ children }: { children: React.ReactNode }) 
       setHistoryError(null);
       setIsHistoryLoading(true);
 
-      const { data: configs, errors } = await client.models.TaxConfig.list();
+      // Fetch TaxConfigs with their related TaxBrackets in a single request
+      const { data: configs, errors } = await client.models.TaxConfig.list({
+        selectionSet: [
+          "id",
+          "financialYearStart",
+          "financialYearEnd",
+          "version",
+          "lastUpdated",
+          // include related brackets fields
+          "brackets.id",
+          "brackets.taxConfigId",
+          "brackets.order",
+          "brackets.lower",
+          "brackets.upper",
+          "brackets.rate",
+          "brackets.styleRef",
+          "brackets.label",
+        ],
+      });
 
       if (errors?.length) {
         throw new Error(errors.map((error) => error.message).join(", "));
       }
-
-      const historyWithCounts = await Promise.all(
-        (configs ?? []).map(async (config) => {
-          try {
-            const { data: brackets } = await client.models.TaxBracket.list({
-              filter: { taxConfigId: { eq: config.id } },
-            });
-
-            return {
-              ...config,
-              bracketCount: brackets?.length ?? 0,
-            };
-          } catch (error) {
-            console.error("Error loading tax brackets:", error);
-            return {
-              ...config,
-              bracketCount: 0,
-            };
-          }
-        })
-      );
-
-      historyWithCounts.sort((a, b) => {
-        const aDate = new Date(a.lastUpdated ?? "").getTime();
-        const bDate = new Date(b.lastUpdated ?? "").getTime();
-
-        const safeADate = Number.isNaN(aDate) ? 0 : aDate;
-        const safeBDate = Number.isNaN(bDate) ? 0 : bDate;
-
-        return safeBDate - safeADate;
-      });
-
-      setHistory(historyWithCounts);
+      setHistory((configs ?? []) as unknown as TaxConfig[]);
     } catch (error) {
       console.error("Error loading tax configuration history:", error);
       setHistoryError(
