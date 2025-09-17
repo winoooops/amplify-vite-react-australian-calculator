@@ -1,6 +1,7 @@
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { fetchAuthSession, fetchUserAttributes } from "aws-amplify/auth";
 import { useCallback, useEffect, useState } from "react";
+import useLocalStorage, { } from "./useLocalStorage";
 
 /**
  * Returns a friendly display name for the current user by checking, in order:
@@ -11,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 export function useDisplayName(): string | undefined {
   const { user } = useAuthenticator();
   const [displayName, setDisplayName] = useState<string | undefined>(undefined);
+  const [displayNameFromLocalStorage, setDisplayNameFromLocalStorage] = useLocalStorage<string | undefined>("displayName", undefined);
 
   const computeName = useCallback(async () => {
     try {
@@ -19,6 +21,7 @@ export function useDisplayName(): string | undefined {
         attrs.name || attrs.given_name || attrs.preferred_username || attrs.email;
       if (attrName) {
         setDisplayName(attrName);
+        setDisplayNameFromLocalStorage(attrName);
         return;
       }
 
@@ -32,31 +35,41 @@ export function useDisplayName(): string | undefined {
         (idPayload?.["email"] as string);
       if (claimName) {
         setDisplayName(claimName);
+        setDisplayNameFromLocalStorage(claimName);
         return;
       }
 
       const fallback =
         (user as unknown as { signInDetails?: { loginId?: string } })?.
           signInDetails?.loginId || user?.username;
-      setDisplayName(typeof fallback === "string" ? fallback : undefined);
+      const value = typeof fallback === "string" ? fallback : undefined;
+      setDisplayName(value);
+      setDisplayNameFromLocalStorage(value);
     } catch {
       const fallback =
         (user as unknown as { signInDetails?: { loginId?: string } })?.
           signInDetails?.loginId || user?.username;
-      setDisplayName(typeof fallback === "string" ? fallback : undefined);
+      const value = typeof fallback === "string" ? fallback : undefined;
+      setDisplayName(value);
+      setDisplayNameFromLocalStorage(value);
     }
-  }, [user]);
+  }, [user, setDisplayNameFromLocalStorage]);
 
   useEffect(() => {
+    if (displayNameFromLocalStorage) {
+      setDisplayName(displayNameFromLocalStorage);
+      return;
+    }
     let cancelled = false;
     (async () => {
       await computeName();
       if (cancelled) return;
     })();
+
     return () => {
       cancelled = true;
     };
-  }, [computeName]);
+  }, [computeName, displayNameFromLocalStorage]);
 
   return displayName;
 }
