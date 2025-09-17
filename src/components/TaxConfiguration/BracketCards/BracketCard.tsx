@@ -1,6 +1,10 @@
 import { UseFormRegister, UseFormWatch } from "react-hook-form";
 import { ReactNode } from "react";
-import { TaxConfigFormData } from "../../../shared/types";
+import { RegisterFieldNames, TaxConfigFormData } from "../../../shared/types";
+import BracketFieldGroup from "./FieldGroup/BracketFieldGroup";
+import { Brackets, ChevronDown } from "lucide-react";
+import BracketInputFieldGroup from "./FieldGroup/BracketInputFieldGroup";
+import SectionTitle from "../../SectionTitle";
 
 type Props = Readonly<{
   register: UseFormRegister<TaxConfigFormData>;
@@ -12,86 +16,66 @@ type Props = Readonly<{
 function BracketCard({
   register,
   index,
-  watch,
   children,
 }: Props) {
+  const fields = [
+    {
+      label: "Order",
+      fieldName: "order",
+      index,
+      options: {
+        required: "Order is required",
+        min: { value: 1, message: "Order must be at least 1" },
+        valueAsNumber: true
+      }
+    },
+    {
+      label: "Lower Bound ($)",
+      fieldName: "lower",
+      index,
+      options: {
+        required: "Lower bound is required",
+        min: { value: 0, message: "Lower bound must be non-negative" },
+        valueAsNumber: true
+      }
+    },
+    {
+      label: "Upper Bound ($)",
+      fieldName: "upper",
+      index,
+      options: {
+        required: "Upper bound is required",
+        valueAsNumber: true
+      }
+    },
+    {
+      label: "Tax Rate (0-1)",
+      fieldName: "rate",
+      index,
+      options: {
+        required: "Tax rate is required",
+        min: { value: 0, message: "Rate must be non-negative" },
+        max: { value: 100, message: "Rate must not exceed 1" },
+        valueAsNumber: true
+      }
+    }
+  ];
+
   return (
     <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-50 to-slate-100 border-2 border-slate-200/50 hover:shadow-md transition-all duration-300">
       <div className="flex justify-between items-start mb-6">
-        <h4 className="text-lg font-semibold text-slate-800">
-          Bracket {index + 1}
-        </h4>
+        <SectionTitle title={`Bracket ${index + 1}`}>
+          <Brackets />
+        </SectionTitle>
         {children}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-slate-700 h-12">
-            Order
-          </label>
-          <input
-            type="number"
-            {...register(`brackets.${index}.order`, {
-              required: "Order is required",
-              min: { value: 1, message: "Order must be at least 1" },
-              valueAsNumber: true
-            })}
-            className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
-          />
-        </div>
+        {fields.map((field) => (
+          <BracketInputFieldGroup key={field.fieldName} label={field.label} fieldName={field.fieldName as RegisterFieldNames} index={index} options={field.options} />
+        ))}
 
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-slate-700 h-12">
-            Lower Bound ($)
-          </label>
-          <input
-            type="number"
-            {...register(`brackets.${index}.lower`, {
-              required: "Lower bound is required",
-              min: {
-                value: 0,
-                message: "Lower bound must be non-negative",
-              },
-              valueAsNumber: true
-            })}
-            className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-slate-700 h-12">
-            Upper Bound ($) (leave empty for last bracket)
-          </label>
-          <input
-            type="number"
-            {...register(`brackets.${index}.upper`, {
-              valueAsNumber: true
-            })}
-            className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-slate-700 h-12">
-            Tax Rate (0-1)
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            {...register(`brackets.${index}.rate`, {
-              required: "Tax rate is required",
-              min: { value: 0, message: "Rate must be non-negative" },
-              max: { value: 1, message: "Rate must not exceed 1" },
-              valueAsNumber: true
-            })}
-            className="w-full px-4 py-3 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-slate-700 h-12">
-            Style Reference
-          </label>
+        <BracketFieldGroup label="Style Reference" fieldName="styleRef">
           <div className="relative">
             <select
               {...register(`brackets.${index}.styleRef`, {
@@ -107,40 +91,10 @@ function BracketCard({
               <option value="default">⚫ Default</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
+              <ChevronDown />
             </div>
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-semibold text-slate-700 h-12">
-              Generated Label Preview
-            </label>
-            <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-              Demo
-            </span>
-          </div>
-          <div className="px-4 py-3 bg-gradient-to-r from-slate-100 to-slate-50 border-2 border-slate-200 rounded-2xl text-slate-700 font-medium">
-            {watch(`brackets.${index}.rate`) !== undefined
-              ? `${(Number(watch(`brackets.${index}.rate`)) * 100).toFixed(
-                1
-              )}% tax bracket`
-              : "Enter rate to see preview"}
-          </div>
-        </div>
+        </BracketFieldGroup>
       </div>
     </div>
   );

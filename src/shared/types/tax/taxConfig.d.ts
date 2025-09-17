@@ -15,3 +15,6 @@ export type TaxConfigFormData = {
     lastUpdated: string;
     brackets: TaxBracketFormData[];
 };
+
+
+export type RegisterFieldNames = "rate" | "order" | "lower" | "upper" | "styleRef";

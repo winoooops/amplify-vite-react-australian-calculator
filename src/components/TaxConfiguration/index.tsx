@@ -114,7 +114,7 @@ function TaxConfiguration() {
       order: newOrder,
       lower: newLower,
       upper: newLower + 10000,
-      rate: 0.1,
+      rate: 0,
       styleRef: "default",
     });
   };
