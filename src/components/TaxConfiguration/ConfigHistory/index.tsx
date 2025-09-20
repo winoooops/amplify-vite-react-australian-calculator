@@ -5,19 +5,28 @@ import SectionTitle from "../../SectionTitle";
 import { TaxConfigsContext } from "../../../shared/contexts/taxConfigsContext";
 
 function ConfigHistory() {
-  const { history, isHistoryLoading, isDeleting, historyError, fetchHistory, handleDeleteConfig } = useContext(TaxConfigsContext);
+  const {
+    history,
+    isHistoryLoading,
+    isDeleting,
+    historyError,
+    fetchHistory,
+    handleDeleteConfig,
+  } = useContext(TaxConfigsContext);
 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
-  if (history.length === 0) { return null; }
+  if (history.length === 0) {
+    return null;
+  }
 
   return (
     <section className="mt-13">
       <div className="p-9 rounded-2xl bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200/50 hover:shadow-lg transition-all duration-300">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <SectionTitle title="Configuration History">
+          <SectionTitle title="Configuration History" isSubSection={true}>
             <History />
           </SectionTitle>
           <button

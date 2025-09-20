@@ -1,20 +1,38 @@
 import { useFormContext } from "react-hook-form";
 import { TaxConfigFormData } from "../../shared/types";
 import SectionTitle from "../SectionTitle";
-import { CalendarRange } from "lucide-react";
+import { CalendarRange, Pin, PinOff, Wand } from "lucide-react";
 
 function MetaCard({ onLoadTestData }: { onLoadTestData: () => void }) {
-  const { register, formState: { errors } } = useFormContext<TaxConfigFormData>();
+  const {
+    register,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useFormContext<TaxConfigFormData>();
+
+  const isActive = watch("isActive");
+
+  const toggleActive = () => {
+    console.log(isActive);
+    setValue("isActive", !isActive);
+  };
 
   return (
     <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200/50 hover:shadow-lg transition-all duration-300">
       <div className="flex justify-between items-center mb-6">
-        <SectionTitle title="Tax Configuration Details">
+        <SectionTitle title="Tax Configuration Details" isSubSection={true}>
           <CalendarRange />
         </SectionTitle>
-        <button type="button" onClick={onLoadTestData}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-2xl hover:from-blue-600 hover:to-blue-700 hover:shadow-lg transition-all duration-300"
-        >Add Test Data</button>
+        <div className="flex justify-between items-center">
+          <span className="p-2 hover:cursor-pointer" onClick={toggleActive}>
+            {isActive ? <PinOff color="orange" /> : <Pin color="orange" />}
+          </span>
+
+          <span className="p-2 hover:cursor-pointer" onClick={onLoadTestData}>
+            <Wand color="blue" />
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -11,14 +11,18 @@ type Props = Readonly<{
 }>;
 
 function BracketCards({ fields, onAddBracket, onRemoveBracket }: Props) {
-  const { register, watch, formState: { errors } } = useFormContext<TaxConfigFormData>();
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext<TaxConfigFormData>();
 
   const hasError = errors.brackets !== undefined;
 
   return (
     <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200/50 hover:shadow-lg transition-all duration-300">
       <div className="flex justify-between items-center mb-6">
-        <SectionTitle title="Tax Brackets">
+        <SectionTitle title="Tax Brackets" isSubSection={true}>
           <Brackets />
         </SectionTitle>
       </div>

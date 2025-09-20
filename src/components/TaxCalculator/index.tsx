@@ -4,11 +4,13 @@ import SectionTitle from "../SectionTitle";
 import TaxResults from "./TaxResults";
 import TaxRateTable from "./TaxRateTable";
 import { Info } from "lucide-react";
-// import { useContext } from "react";
-// import { TaxConfigsContext } from "../../shared/contexts/taxConfigsContext";
+import { useContext } from "react";
+import { TaxConfigsContext } from "../../shared/contexts/taxConfigsContext";
 
 function TaxCalculator() {
-  // const {history} = useContext(TaxConfigsContext); 
+  const {history} = useContext(TaxConfigsContext);
+
+  console.log(history);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">

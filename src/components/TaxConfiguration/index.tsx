@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { generateClient } from "aws-amplify/data";
-import { useForm, useFieldArray, SubmitHandler, FormProvider } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  SubmitHandler,
+  FormProvider,
+} from "react-hook-form";
 import { Schema } from "../../../amplify/data/resource";
 import MetaCard from "./MetaCard";
 import ActionButtons from "./ActionButtons";
 import BracketCards from "./BracketCards";
-import { TaxConfigFormData } from "../../shared/types";
+import {
+  TaxConfigFormData,
+  CreateTaxConfigWithBracketsInput,
+} from "../../shared/types";
 import SectionTitle from "../SectionTitle";
 import { Bolt } from "lucide-react";
 import ConfigHistory from "./ConfigHistory";
 import { useContext } from "react";
 import { TaxConfigsContext } from "../../shared/contexts/taxConfigsContext";
+import createTaxConfigMutationHandler from "../../shared/middlewares/mutations/createTaxConfigMutationHandler";
 
 const client = generateClient<Schema>();
 
@@ -19,7 +28,8 @@ const defaultValues: TaxConfigFormData = {
   financialYearEnd: 2025,
   version: "0.1",
   lastUpdated: new Date().toISOString().split("T")[0],
-  brackets: []
+  brackets: [],
+  isActive: false,
 };
 
 function TaxConfiguration() {
@@ -29,18 +39,11 @@ function TaxConfiguration() {
     message: string;
   } | null>(null);
 
-  const methods = useForm<TaxConfigFormData>(
-    {
-      defaultValues: defaultValues
-    }
-  );
+  const methods = useForm<TaxConfigFormData>({
+    defaultValues: defaultValues,
+  });
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    getValues
-  } = methods;
+  const { control, handleSubmit, reset, getValues } = methods;
 
   const { fetchHistory } = useContext(TaxConfigsContext);
 
@@ -54,32 +57,32 @@ function TaxConfiguration() {
     setSubmitStatus(null);
 
     try {
-      // Create TaxConfig first
-      const taxConfig = await client.models.TaxConfig.create({
+      const payload: CreateTaxConfigWithBracketsInput = {
         financialYearStart: data.financialYearStart,
         financialYearEnd: data.financialYearEnd,
         version: data.version,
         lastUpdated: data.lastUpdated,
-      });
-
-      const taxConfigId = taxConfig.data?.id;
-      if (!taxConfigId) {
-        throw new Error("Failed to create TaxConfig");
-      }
-
-      // Create TaxBrackets
-      const bracketPromises = data.brackets.map((bracket) =>
-        client.models.TaxBracket.create({
-          taxConfigId,
+        isActive: data.isActive,
+        brackets: data.brackets.map((bracket) => ({
           order: bracket.order,
           lower: bracket.lower,
-          upper: bracket.upper,
+          upper:
+            bracket.upper === undefined || bracket.upper === null
+              ? null
+              : bracket.upper,
           rate: bracket.rate,
           styleRef: bracket.styleRef,
-        })
+        })),
+      };
+
+      const createdConfig = await createTaxConfigMutationHandler(
+        client,
+        payload
       );
 
-      await Promise.all(bracketPromises);
+      if (!createdConfig?.id) {
+        throw new Error("Failed to create tax configuration");
+      }
 
       setSubmitStatus({
         type: "success",
@@ -105,8 +108,9 @@ function TaxConfiguration() {
     const brackets = getValues("brackets");
     const lastBracket = brackets[brackets.length - 1];
     const newOrder = lastBracket?.order ? lastBracket.order + 1 : 1;
-    const newLower =
-      lastBracket?.upper ? lastBracket.upper + 1 : 0;
+    const lastUpper =
+      typeof lastBracket?.upper === "number" ? lastBracket.upper : null;
+    const newLower = lastUpper !== null ? lastUpper + 1 : 0;
 
     append({
       order: newOrder,
@@ -119,7 +123,7 @@ function TaxConfiguration() {
 
   const loadTestData = () => {
     reset(defaultValues);
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -131,10 +135,11 @@ function TaxConfiguration() {
 
       {submitStatus && (
         <div
-          className={`p-6 mb-8 rounded-2xl border-l-4 ${submitStatus.type === "success"
-            ? "bg-gradient-to-r from-green-50 to-green-100 border-green-500 text-green-800"
-            : "bg-gradient-to-r from-red-50 to-red-100 border-red-500 text-red-800"
-            }`}
+          className={`p-6 mb-8 rounded-2xl border-l-4 ${
+            submitStatus.type === "success"
+              ? "bg-gradient-to-r from-green-50 to-green-100 border-green-500 text-green-800"
+              : "bg-gradient-to-r from-red-50 to-red-100 border-red-500 text-red-800"
+          }`}
         >
           <p className="font-semibold">{submitStatus.message}</p>
         </div>
@@ -146,7 +151,11 @@ function TaxConfiguration() {
           <MetaCard onLoadTestData={loadTestData} />
 
           {/* Tax Brackets */}
-          <BracketCards fields={fields} onAddBracket={addBracket} onRemoveBracket={remove} />
+          <BracketCards
+            fields={fields}
+            onAddBracket={addBracket}
+            onRemoveBracket={remove}
+          />
 
           {/* Action buttons */}
           <ActionButtons isSubmitting={isSubmitting} />

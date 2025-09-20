@@ -10,7 +10,8 @@ const schema = a.schema({
       version: a.string(),
       lastUpdated: a.string(),
       // Relationship: one TaxConfig has many TaxBrackets via TaxBracket.taxConfigId
-      brackets: a.hasMany('TaxBracket', 'taxConfigId'),
+      brackets: a.hasMany("TaxBracket", "taxConfigId"),
+      isActive: a.boolean(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
@@ -19,7 +20,7 @@ const schema = a.schema({
     .model({
       taxConfigId: a.id(), // FK -> TaxConfig.id
       // Back-reference to parent TaxConfig
-      taxConfig: a.belongsTo('TaxConfig', 'taxConfigId'),
+      taxConfig: a.belongsTo("TaxConfig", "taxConfigId"),
       order: a.integer(),
       lower: a.integer(),
       upper: a.integer(), // omit when open-ended
