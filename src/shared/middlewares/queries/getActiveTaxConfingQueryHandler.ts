@@ -12,6 +12,16 @@ const getActiveTaxConfigQueryHandler = async (
         eq: payload.isActive,
       },
     },
+    selectionSet: [
+      "id",
+      "brackets.*",
+      "financialYearStart",
+      "financialYearEnd",
+      "version",
+      "updatedAt",
+      "lastUpdated",
+      "isActive",
+    ],
   });
 
   if (errors && errors.length) {
@@ -23,7 +33,7 @@ const getActiveTaxConfigQueryHandler = async (
   const activeConfig = data[0];
   const configId = activeConfig.id;
 
-  const brackets = listTaxBracketQueryHandler(client, { configId });
+  const brackets = await listTaxBracketQueryHandler(client, { configId });
 
   return {
     ...data[0],

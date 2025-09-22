@@ -10,9 +10,14 @@ const listTaxBracketQueryHandler = async (
     {
       selectionSet: [
         "id",
-        "brackets.id","brackets.taxConfigId","brackets.order",
-        "brackets.lower","brackets.upper","brackets.rate",
-        "brackets.styleRef","brackets.label",
+        "brackets.id",
+        "brackets.taxConfigId",
+        "brackets.order",
+        "brackets.lower",
+        "brackets.upper",
+        "brackets.rate",
+        "brackets.colorRef",
+        "brackets.label",
       ],
     }
   );

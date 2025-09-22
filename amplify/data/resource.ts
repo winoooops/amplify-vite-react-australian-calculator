@@ -25,7 +25,14 @@ const schema = a.schema({
       lower: a.integer(),
       upper: a.integer(), // omit when open-ended
       rate: a.float(),
-      styleRef: a.string(),
+      colorRef: a.enum([
+        "DEFAULT",
+        "LEVEL_1",
+        "LEVEL_2",
+        "LEVEL_3",
+        "LEVEL_4",
+        "LEVEL_5",
+      ]),
       label: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),

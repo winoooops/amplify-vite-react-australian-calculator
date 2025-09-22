@@ -9,8 +9,16 @@ const createTaxBracketMutationHandler = async (
   console.log(input);
   const { data, errors } = await client.models.TaxBracket.create(input, {
     selectionSet: [
-      "id","taxConfigId","order","lower","upper","rate","styleRef","label",
-      "createdAt","updatedAt",
+      "id",
+      "taxConfigId",
+      "order",
+      "lower",
+      "upper",
+      "rate",
+      "colorRef",
+      "label",
+      "createdAt",
+      "updatedAt",
     ],
   });
 

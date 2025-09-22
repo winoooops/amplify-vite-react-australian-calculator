@@ -7,6 +7,8 @@ export const createTaxConfigMutationHandler = async (
   client: V6Client<Schema>,
   input: CreateTaxConfigWithBracketsInput
 ) => {
+  console.log(input);
+
   const { data: createdConfig, errors: configErrors } =
     await client.models.TaxConfig.create({
       financialYearStart: input.financialYearStart,

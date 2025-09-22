@@ -4,6 +4,8 @@ export type {
   TaxBracketFormData,
   CreateTaxBracketInput,
 } from "./tax/taxBracket";
+
+export { COLOR_REF_ENUM, colorRefMap } from "./tax/taxBracket";
 export type {
   TaxConfig,
   TaxConfigFormData,

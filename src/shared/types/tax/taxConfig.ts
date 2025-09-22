@@ -33,4 +33,4 @@ export type RegisterFieldNames =
   | "order"
   | "lower"
   | "upper"
-  | "styleRef";
+  | "colorRef";

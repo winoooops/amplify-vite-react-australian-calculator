@@ -14,7 +14,6 @@ function MetaCard({ onLoadTestData }: { onLoadTestData: () => void }) {
   const isActive = watch("isActive");
 
   const toggleActive = () => {
-    console.log(isActive);
     setValue("isActive", !isActive);
   };
 

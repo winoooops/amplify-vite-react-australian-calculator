@@ -1,6 +1,8 @@
 import { Calculator } from "lucide-react";
+import { TaxConfigMetaData } from "..";
 
-function Header() {
+function Header({ meta }: { meta: TaxConfigMetaData }) {
+  console.log(meta);
   return (
     <header className="flex-col text-center mb-12">
       <div className="flex justify-center items-center gap-3 mb-4">
@@ -12,8 +14,9 @@ function Header() {
         </h1>
       </div>
       <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-        Calculate your individual income tax for the 20XX financial year with
-        our comprehensive Australian tax calculator
+        Calculate your individual income tax for the {meta.financialYearStart}-
+        {meta.financialYearEnd} financial year with our comprehensive Australian
+        tax calculator
       </p>
     </header>
   );

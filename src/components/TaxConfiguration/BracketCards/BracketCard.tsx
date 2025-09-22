@@ -13,11 +13,7 @@ type Props = Readonly<{
   children: ReactNode;
 }>;
 
-function BracketCard({
-  register,
-  index,
-  children,
-}: Props) {
+function BracketCard({ register, index, children }: Props) {
   const fields = [
     {
       label: "Order",
@@ -26,8 +22,8 @@ function BracketCard({
       options: {
         required: "Order is required",
         min: { value: 1, message: "Order must be at least 1" },
-        valueAsNumber: true
-      }
+        valueAsNumber: true,
+      },
     },
     {
       label: "Lower Bound ($)",
@@ -36,29 +32,29 @@ function BracketCard({
       options: {
         required: "Lower bound is required",
         min: { value: 0, message: "Lower bound must be non-negative" },
-        valueAsNumber: true
-      }
+        valueAsNumber: true,
+      },
     },
     {
       label: "Upper Bound ($)",
       fieldName: "upper",
       index,
       options: {
-        required: "Upper bound is required",
-        valueAsNumber: true
-      }
+        valueAsNumber: true,
+      },
     },
     {
-      label: "Tax Rate (0-1)",
+      label: "Tax Rate (0-100)",
       fieldName: "rate",
       index,
+      step: "0.5",
       options: {
         required: "Tax rate is required",
         min: { value: 0, message: "Rate must be non-negative" },
-        max: { value: 100, message: "Rate must not exceed 1" },
-        valueAsNumber: true
-      }
-    }
+        max: { value: 100, message: "Rate must not exceed 100" },
+        valueAsNumber: true,
+      },
+    },
   ];
 
   return (
@@ -72,13 +68,20 @@ function BracketCard({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {fields.map((field) => (
-          <BracketInputFieldGroup key={field.fieldName} label={field.label} fieldName={field.fieldName as RegisterFieldNames} index={index} options={field.options} />
+          <BracketInputFieldGroup
+            key={field.fieldName}
+            label={field.label}
+            fieldName={field.fieldName as RegisterFieldNames}
+            index={index}
+            options={field.options}
+            step={field.step ?? undefined}
+          />
         ))}
 
-        <BracketFieldGroup label="Style Reference" fieldName="styleRef">
+        <BracketFieldGroup label="Style Reference" fieldName="colorRef">
           <div className="relative">
             <select
-              {...register(`brackets.${index}.styleRef`, {
+              {...register(`brackets.${index}.colorRef`, {
                 required: "Style reference is required",
               })}
               className="w-full px-4 py-3 pr-10 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none appearance-none cursor-pointer"

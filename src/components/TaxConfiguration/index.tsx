@@ -13,6 +13,7 @@ import BracketCards from "./BracketCards";
 import {
   TaxConfigFormData,
   CreateTaxConfigWithBracketsInput,
+  COLOR_REF_ENUM,
 } from "../../shared/types";
 import SectionTitle from "../SectionTitle";
 import { Bolt } from "lucide-react";
@@ -30,6 +31,51 @@ const defaultValues: TaxConfigFormData = {
   lastUpdated: new Date().toISOString().split("T")[0],
   brackets: [],
   isActive: false,
+};
+
+const dummyValues: TaxConfigFormData = {
+  financialYearStart: 2024,
+  financialYearEnd: 2025,
+  version: "0.1",
+  lastUpdated: new Date().toISOString().split("T")[0],
+  brackets: [
+    {
+      order: 1,
+      lower: 0,
+      upper: 18400,
+      rate: 0,
+      colorRef: COLOR_REF_ENUM.LEVEL_1,
+    },
+    {
+      order: 2,
+      lower: 18401,
+      upper: 45000,
+      rate: 19,
+      colorRef: COLOR_REF_ENUM.LEVEL_2,
+    },
+    {
+      order: 3,
+      lower: 45001,
+      upper: 120000,
+      rate: 32.5,
+      colorRef: COLOR_REF_ENUM.LEVEL_3,
+    },
+    {
+      order: 4,
+      lower: 120001,
+      upper: 180000,
+      rate: 37,
+      colorRef: COLOR_REF_ENUM.LEVEL_4,
+    },
+    {
+      order: 5,
+      lower: 180001,
+      upper: null,
+      rate: 45,
+      colorRef: COLOR_REF_ENUM.LEVEL_5,
+    },
+  ],
+  isActive: true,
 };
 
 function TaxConfiguration() {
@@ -71,7 +117,7 @@ function TaxConfiguration() {
               ? null
               : bracket.upper,
           rate: bracket.rate,
-          styleRef: bracket.styleRef,
+          colorRef: bracket.colorRef,
         })),
       };
 
@@ -117,12 +163,12 @@ function TaxConfiguration() {
       lower: newLower,
       upper: newLower + 10000,
       rate: 0,
-      styleRef: "default",
+      colorRef: COLOR_REF_ENUM.DEFAULT,
     });
   };
 
   const loadTestData = () => {
-    reset(defaultValues);
+    reset(dummyValues);
   };
 
   return (
