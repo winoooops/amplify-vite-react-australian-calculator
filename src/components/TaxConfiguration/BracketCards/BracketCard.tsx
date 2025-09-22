@@ -1,6 +1,10 @@
 import { UseFormRegister, UseFormWatch } from "react-hook-form";
 import { ReactNode } from "react";
-import { RegisterFieldNames, TaxConfigFormData } from "../../../shared/types";
+import {
+  COLOR_REF_ENUM,
+  RegisterFieldNames,
+  TaxConfigFormData,
+} from "../../../shared/types";
 import BracketFieldGroup from "./FieldGroup/BracketFieldGroup";
 import { Brackets, ChevronDown } from "lucide-react";
 import BracketInputFieldGroup from "./FieldGroup/BracketInputFieldGroup";
@@ -86,12 +90,12 @@ function BracketCard({ register, index, children }: Props) {
               })}
               className="w-full px-4 py-3 pr-10 text-lg font-medium text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none appearance-none cursor-pointer"
             >
-              <option value="green">🟢 Green</option>
-              <option value="blue">🔵 Blue</option>
-              <option value="orange">🟠 Orange</option>
-              <option value="red">🔴 Red</option>
-              <option value="purple">🟣 Purple</option>
-              <option value="default">⚫ Default</option>
+              <option value={COLOR_REF_ENUM.LEVEL_1}>🟢 Green</option>
+              <option value={COLOR_REF_ENUM.LEVEL_2}>🔵 Blue</option>
+              <option value={COLOR_REF_ENUM.LEVEL_3}>🟠 Orange</option>
+              <option value={COLOR_REF_ENUM.LEVEL_4}>🔴 Red</option>
+              <option value={COLOR_REF_ENUM.LEVEL_5}>🟣 Purple</option>
+              <option value={COLOR_REF_ENUM.DEFAULT}>⚫ Default</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <ChevronDown />
