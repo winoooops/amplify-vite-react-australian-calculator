@@ -189,7 +189,7 @@ export function TaxConfigsProvider({
     }
   };
 
-  const getActiveConfig = async (): Promise<TaxConfig | null> => {
+  const getActiveConfig = async () => {
     const { data, errors } = await client.models.TaxConfig.list({
       filter: {
         isActive: {
@@ -219,7 +219,7 @@ export function TaxConfigsProvider({
 
     const brackets = await bracketsQueryHandler(client, data[0].id);
 
-    return { ...data[0], brackets } as TaxConfig;
+    setActiveConfig({ ...data[0], brackets } as TaxConfig);
   };
 
   const createTaxConfigWithBrackets = async (
@@ -258,7 +258,7 @@ export function TaxConfigsProvider({
   };
 
   useEffect(() => {
-    getActiveConfig().then((v: TaxConfig | null) => setActiveConfig(v));
+    getActiveConfig();
 
     return () => setActiveConfig(null);
   }, []);

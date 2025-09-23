@@ -2,8 +2,11 @@ import SectionTitle from "../../SectionTitle";
 import { DollarSign } from "lucide-react";
 import IncomeInput from "./IncomeInput";
 import MetricCards from "./MetricCards";
+import { useState } from "react";
 
 function TaxResults() {
+  const [income, setIncome] = useState<number>(0);
+
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 h-fit">
       <SectionTitle title="Tax Calculator">
@@ -11,8 +14,8 @@ function TaxResults() {
           <DollarSign color="white" />
         </div>
       </SectionTitle>
-      <IncomeInput />
-      <MetricCards />
+      <IncomeInput income={income} setIncome={setIncome} />
+      <MetricCards income={income} />
     </div>
   );
 }

@@ -1,11 +1,23 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 
-function IncomeInput() {
-  const [value, setValue] = useState<string>("");
-
+function IncomeInput({
+  income,
+  setIncome,
+}: {
+  income: number;
+  setIncome: React.Dispatch<React.SetStateAction<number>>;
+}) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    const value = e.target.value;
+
+    // Only allow numeric input, empty string, and decimal point
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setIncome(value === "" ? 0 : Number(value));
+    }
   };
+
+  // Allow empty input by using empty string when income is 0
+  const displayValue = income === 0 ? "" : income.toString();
 
   return (
     <div className="mb-8">
@@ -23,8 +35,8 @@ function IncomeInput() {
           type="number"
           id="income-input"
           name="income-input"
-          placeholder="0"
-          value={value}
+          placeholder="Your income here"
+          value={displayValue}
           onChange={handleChange}
           aria-label="Enter your annual taxable income in Australian dollars"
           className="w-full pl-8 pr-4 py-4 text-2xl font-bold text-slate-900 bg-gradient-to-r from-slate-50 to-white border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 outline-none"
