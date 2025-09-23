@@ -25,16 +25,8 @@ export interface TaxBracket {
   upper: number | null;
   rate: number;
   colorRef: COLOR_REF_ENUM;
+  maxTaxAmount?: number;
   taxConfig?: string;
 }
 
 export type TaxBracketFormData = Omit<TaxBracket, "id" | "taxConfig">;
-
-export type CreateTaxBracketInput = {
-  order: number;
-  lower: number;
-  upper: number | null;
-  rate: number;
-  colorRef: COLOR_REF_ENUM;
-  taxConfigId: string;
-};

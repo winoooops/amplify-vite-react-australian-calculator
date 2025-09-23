@@ -8,7 +8,6 @@ import React, {
 import { generateClient } from "aws-amplify/data";
 import { Schema } from "../../../amplify/data/resource";
 import type { TaxConfig, CreateTaxConfigWithBracketsInput } from "../types";
-import createTaxConfigMutationHandler from "../middlewares/mutations/createTaxConfigMutationHandler";
 
 type TaxConfigsContextType = {
   history: TaxConfig[];
@@ -21,7 +20,7 @@ type TaxConfigsContextType = {
   activateConfig: (configId: string) => Promise<void>;
   createTaxConfigWithBrackets: (
     input: CreateTaxConfigWithBracketsInput
-  ) => Promise<void>;
+  ) => Promise<TaxConfig>;
   activeConfig: TaxConfig | null;
 };
 
@@ -230,8 +229,25 @@ export function TaxConfigsProvider({
   const createTaxConfigWithBrackets = async (
     input: CreateTaxConfigWithBracketsInput
   ) => {
-    const data = await createTaxConfigMutationHandler(client, input);
-    console.log(data);
+    const { data, errors } = await client.models.TaxConfig.create(input, {
+      selectionSet: [
+        "id",
+        "createdAt",
+        "updatedAt",
+        "lastUpdated",
+        "version",
+        "isActive",
+        "financialYearEnd",
+        "financialYearStart",
+        "brackets.*",
+      ],
+    });
+
+    if (errors && errors.length > 0) {
+      throw new Error(errors.map((error) => error.message).join(", "));
+    }
+
+    return data as TaxConfig;
   };
 
   useEffect(() => {

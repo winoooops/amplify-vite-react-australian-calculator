@@ -33,6 +33,7 @@ const schema = a.schema({
         "LEVEL_4",
         "LEVEL_5",
       ]),
+      maxTaxAmount: a.integer(),
       label: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),

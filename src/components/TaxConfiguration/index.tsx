@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { generateClient } from "aws-amplify/data";
 import {
   useForm,
   useFieldArray,
   SubmitHandler,
   FormProvider,
 } from "react-hook-form";
-import { Schema } from "../../../amplify/data/resource";
 import MetaCard from "./MetaCard";
 import ActionButtons from "./ActionButtons";
 import BracketCards from "./BracketCards";
@@ -20,9 +18,6 @@ import { Bolt } from "lucide-react";
 import ConfigHistory from "./ConfigHistory";
 import { useContext } from "react";
 import { TaxConfigsContext } from "../../shared/contexts/taxConfigsContext";
-import createTaxConfigMutationHandler from "../../shared/middlewares/mutations/createTaxConfigMutationHandler";
-
-const client = generateClient<Schema>();
 
 const defaultValues: TaxConfigFormData = {
   financialYearStart: 2024,
@@ -91,7 +86,8 @@ function TaxConfiguration() {
 
   const { control, handleSubmit, reset, getValues } = methods;
 
-  const { fetchHistory } = useContext(TaxConfigsContext);
+  const { fetchHistory, createTaxConfigWithBrackets } =
+    useContext(TaxConfigsContext);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -121,10 +117,7 @@ function TaxConfiguration() {
         })),
       };
 
-      const createdConfig = await createTaxConfigMutationHandler(
-        client,
-        payload
-      );
+      const createdConfig = await createTaxConfigWithBrackets(payload);
 
       if (!createdConfig?.id) {
         throw new Error("Failed to create tax configuration");
