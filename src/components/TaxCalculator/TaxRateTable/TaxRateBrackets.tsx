@@ -56,7 +56,7 @@ function TaxRateBracket() {
             lower={bracket.lower}
             upper={bracket.upper}
             taxRate={bracket.rate}
-            maxTaxAmount={0}
+            maxTaxAmount={bracket.maxTaxAmount}
             colorRef={bracket.colorRef}
           />
         );

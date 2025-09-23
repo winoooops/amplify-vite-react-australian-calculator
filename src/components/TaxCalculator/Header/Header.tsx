@@ -2,7 +2,6 @@ import { Calculator } from "lucide-react";
 import { TaxConfigMetaData } from "..";
 
 function Header({ meta }: { meta: TaxConfigMetaData }) {
-  console.log(meta);
   return (
     <header className="flex-col text-center mb-12">
       <div className="flex justify-center items-center gap-3 mb-4">

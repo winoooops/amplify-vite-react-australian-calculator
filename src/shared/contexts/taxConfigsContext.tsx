@@ -8,6 +8,12 @@ import React, {
 import { generateClient } from "aws-amplify/data";
 import { Schema } from "../../../amplify/data/resource";
 import type { TaxConfig, CreateTaxConfigWithBracketsInput } from "../types";
+import { batchDeleteHandler } from "../middlewares/mutations/batchDeleteHandler";
+import {
+  bracketPostHandler,
+  bracketsPreHandler,
+} from "../middlewares/mutations/bracketsCreationHandler";
+import { bracketsQueryHandler } from "../middlewares/mutations/bracketsQueryHandler";
 
 type TaxConfigsContextType = {
   history: TaxConfig[];
@@ -117,19 +123,7 @@ export function TaxConfigsProvider({
         throw new Error(errors.map((error) => error.message).join(", "));
       }
 
-      const deletePromises: Promise<unknown>[] = [];
-
-      (brackets ?? []).forEach((bracket) => {
-        if (bracket?.id) {
-          deletePromises.push(
-            client.models.TaxBracket.delete({ id: bracket.id })
-          );
-        }
-      });
-
-      await Promise.all(deletePromises);
-
-      await client.models.TaxConfig.delete({ id: configId });
+      batchDeleteHandler(configId, brackets, client);
 
       await fetchHistory();
     } catch (error: unknown) {
@@ -223,29 +217,42 @@ export function TaxConfigsProvider({
       return null;
     }
 
-    return data[0] as TaxConfig;
+    const brackets = await bracketsQueryHandler(client, data[0].id);
+
+    return { ...data[0], brackets } as TaxConfig;
   };
 
   const createTaxConfigWithBrackets = async (
     input: CreateTaxConfigWithBracketsInput
   ) => {
-    const { data, errors } = await client.models.TaxConfig.create(input, {
-      selectionSet: [
-        "id",
-        "createdAt",
-        "updatedAt",
-        "lastUpdated",
-        "version",
-        "isActive",
-        "financialYearEnd",
-        "financialYearStart",
-        "brackets.*",
-      ],
-    });
+    const computedInput = bracketsPreHandler(input);
+
+    const { data, errors } = await client.models.TaxConfig.create(
+      computedInput,
+      {
+        selectionSet: [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "lastUpdated",
+          "version",
+          "isActive",
+          "financialYearEnd",
+          "financialYearStart",
+          "brackets.*",
+        ],
+      }
+    );
 
     if (errors && errors.length > 0) {
       throw new Error(errors.map((error) => error.message).join(", "));
     }
+
+    if (!data) {
+      throw new Error("Failed to create tax config");
+    }
+
+    await bracketPostHandler(client, data.id, computedInput.brackets);
 
     return data as TaxConfig;
   };

@@ -43,8 +43,12 @@ function TaxRateCard({ lower, upper, taxRate, maxTaxAmount, colorRef }: Props) {
     return colorClasses[colorKey];
   };
 
-  const maxTaxMessage =
-    maxTaxAmount === 0 ? "No tax payable" : `Max Tax: ${maxTaxAmount}`;
+  const maxTaxMessage = (maxTaxAmount: number) => {
+    if (maxTaxAmount === -1) return `Plus ${taxRate}% on excess`;
+    if (maxTaxAmount === 0) return "No tax payable";
+
+    return `Max Tax: $${maxTaxAmount}`;
+  };
 
   const color = getColorClasses(colorRef);
 
@@ -70,7 +74,7 @@ function TaxRateCard({ lower, upper, taxRate, maxTaxAmount, colorRef }: Props) {
         </div>
 
         <div className="flex items-center justify-between text-xs font-medium text-slate-500 bg-slate-50/50 px-3 py-2 rounded-lg">
-          <span>{maxTaxMessage}</span>
+          <span>{maxTaxMessage(maxTaxAmount)}</span>
         </div>
       </div>
     </div>

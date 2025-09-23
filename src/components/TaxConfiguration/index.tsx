@@ -37,13 +37,13 @@ const dummyValues: TaxConfigFormData = {
     {
       order: 1,
       lower: 0,
-      upper: 18400,
+      upper: 18200,
       rate: 0,
       colorRef: COLOR_REF_ENUM.LEVEL_1,
     },
     {
       order: 2,
-      lower: 18401,
+      lower: 18201,
       upper: 45000,
       rate: 19,
       colorRef: COLOR_REF_ENUM.LEVEL_2,
