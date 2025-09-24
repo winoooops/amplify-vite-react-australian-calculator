@@ -1,7 +1,7 @@
 import SectionTitle from "../../SectionTitle";
 import { TrendingUp } from "lucide-react";
 import TaxRateBrackets from "./TaxRateBrackets";
-import TaxRateInfo from "./TaxRateInfo";
+import TaxRateInfo from "../TaxRateInfo";
 
 function TaxRateTable() {
   return (
@@ -13,7 +13,12 @@ function TaxRateTable() {
       </SectionTitle>
 
       <TaxRateBrackets />
-      <TaxRateInfo />
+      <TaxRateInfo
+        title="How Marginal Tax Works"
+        textContent="You only pay the higher tax rate on income above each threshold. For
+                example, if you earn $50,000, you pay 0% on the first $18,200, then
+                19% on the remaining $31,800."
+      />
     </div>
   );
 }

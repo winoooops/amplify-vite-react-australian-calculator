@@ -217,7 +217,9 @@ export function TaxConfigsProvider({
       return null;
     }
 
-    const brackets = await bracketsQueryHandler(client, data[0].id);
+    const brackets = (await bracketsQueryHandler(client, data[0].id)).sort(
+      (a, b) => a.order - b.order
+    );
 
     setActiveConfig({ ...data[0], brackets } as TaxConfig);
   };

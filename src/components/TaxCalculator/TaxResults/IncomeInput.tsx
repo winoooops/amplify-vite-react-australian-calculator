@@ -17,7 +17,7 @@ function IncomeInput({
   };
 
   // Allow empty input by using empty string when income is 0
-  const displayValue = income === 0 ? "" : income.toString();
+  const displayValue = income === 0 ? "0" : income.toString();
 
   return (
     <div className="mb-8">
@@ -32,7 +32,7 @@ function IncomeInput({
           <span className="text-slate-500 text-lg font-medium">$</span>
         </div>
         <input
-          type="number"
+          type="text"
           id="income-input"
           name="income-input"
           placeholder="Your income here"

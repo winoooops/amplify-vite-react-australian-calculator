@@ -1,6 +1,6 @@
 export type MetricProps = {
   name: string;
-  value: number;
+  value: string;
   ui: {
     bgColor: "blue" | "red" | "green" | "slate";
   };

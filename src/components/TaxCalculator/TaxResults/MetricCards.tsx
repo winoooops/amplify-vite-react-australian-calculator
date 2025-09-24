@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useTaxConfigs } from "../../../shared/contexts/taxConfigsContext";
 import MetricCard from "./MetricCard";
 import { Calculator, TrendingDown, Percent } from "lucide-react";
+import TaxRateInfo from "../TaxRateInfo";
 
 function MetricCards({ income }: { income: number }) {
   const { activeConfig } = useTaxConfigs();
   const brackets = activeConfig?.brackets;
   const [totalTax, setTotalTax] = useState(0);
+  const [taxCap, setTaxCap] = useState(0);
 
   const calculateTotalTax = useCallback(
     (income: number) => {
@@ -14,11 +16,9 @@ function MetricCards({ income }: { income: number }) {
 
       let totalTax = 0;
       let remainingIncome = income;
+      let bracketAt = 0;
 
-      // Sort brackets by lower bound
-      const sortedBrackets = [...brackets].sort((a, b) => a.lower - b.lower);
-
-      for (const bracket of sortedBrackets) {
+      for (const bracket of brackets) {
         if (remainingIncome <= 0) break;
 
         const bracketUpper = bracket.upper ?? Infinity;
@@ -28,12 +28,17 @@ function MetricCards({ income }: { income: number }) {
         );
 
         if (taxableInThisBracket > 0) {
+          bracketAt++;
           totalTax += (taxableInThisBracket * bracket.rate) / 100;
           remainingIncome -= taxableInThisBracket;
         }
       }
 
-      return Math.round(totalTax * 100) / 100; // Round to 2 decimal places
+      const indexAt = Math.max(bracketAt - 1, 0);
+
+      setTaxCap(() => brackets?.[indexAt].rate);
+
+      return totalTax;
     },
     [brackets]
   );
@@ -43,13 +48,12 @@ function MetricCards({ income }: { income: number }) {
   }, [income, calculateTotalTax]);
 
   const netIncome = income - totalTax;
-  const effectiveRate =
-    income > 0 ? Math.round((totalTax / income) * 100 * 100) / 100 : 0;
+  const effectiveRate = income > 0 ? Math.round((totalTax / income) * 100) : 0;
 
   const metrics = [
     {
       name: "Total Tax",
-      value: totalTax,
+      value: `$${Math.round(totalTax)}`,
       ui: {
         bgColor: "red" as const,
       },
@@ -57,7 +61,7 @@ function MetricCards({ income }: { income: number }) {
     },
     {
       name: "Net Income",
-      value: netIncome,
+      value: `$${Math.round(netIncome)}`,
       ui: {
         bgColor: "green" as const,
       },
@@ -65,7 +69,7 @@ function MetricCards({ income }: { income: number }) {
     },
     {
       name: "Effective Rate",
-      value: effectiveRate,
+      value: effectiveRate.toFixed(1) + "%",
       ui: {
         bgColor: "blue" as const,
       },
@@ -85,6 +89,13 @@ function MetricCards({ income }: { income: number }) {
           {metric.icon}
         </MetricCard>
       ))}
+
+      {taxCap > 0 && (
+        <TaxRateInfo
+          title="Your Marginal Tax Rate"
+          textContent={`Your next dollar of income will be taxed at ${taxCap}%`}
+        />
+      )}
     </div>
   );
 }
