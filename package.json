@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:analyze": "ANALYZE=1 npm run build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "serve": "serve dist -p 3000"
+    "serve": "serve dist -p 3000",
+    "lighthouse": "lhci autorun",
+    "perf": "npm run build && npx lighthouse http://localhost:3000 --view"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.5.5",
