@@ -1,34 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { Amplify } from "aws-amplify";
-import outputs from "../amplify_outputs.json";
-import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen.ts";
-import ErrorComponent from "./components/ErrorComponent.tsx";
-import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer } from "react-toastify";
-
-Amplify.configure(outputs);
-
-const router = createRouter({ routeTree });
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
+import App from "./App.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ErrorBoundary FallbackComponent={ErrorComponent}>
-      <Authenticator socialProviders={["google", "amazon"]}>
-        <RouterProvider router={router} />
-      </Authenticator>
-    </ErrorBoundary>
+    <App />
     <ToastContainer />
   </React.StrictMode>
 );

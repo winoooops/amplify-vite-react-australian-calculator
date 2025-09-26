@@ -1,41 +1,22 @@
-import { generateClient } from "aws-amplify/data";
-import { Schema } from "../../../../amplify/data/resource";
 import { useEffect, useState } from "react";
+import { useTaxConfigs } from "../../../shared/contexts/taxConfigsContext";
 import { TaxBracket } from "../../../shared/types";
 import TaxRateCard from "./TaxRateCard";
 
-const client = generateClient<Schema>();
-
 function TaxRateBracket() {
+  const { activeConfig } = useTaxConfigs();
   const [brackets, setBrackets] = useState<TaxBracket[]>([]);
 
-  const getBrackets = async () => {
-    const { data, errors } = await client.models.TaxConfig.list({
-      filter: {
-        isActive: {
-          eq: true,
-        },
-      },
-      selectionSet: ["brackets.*"],
-    });
-    if (errors) {
-      throw new Error(errors.map((err) => err.message).join(", "));
-    }
-
-    if (data && data.length === 0) {
+  useEffect(() => {
+    if (activeConfig?.brackets) {
+      const bracketCollection = [...activeConfig.brackets].sort(
+        (a, b) => a.order - b.order
+      );
+      setBrackets(bracketCollection);
+    } else {
       setBrackets([]);
     }
-
-    const bracketCollection = (data[0].brackets as TaxBracket[]).sort(
-      (a, b) => a.order - b.order
-    );
-
-    setBrackets(bracketCollection);
-  };
-
-  useEffect(() => {
-    getBrackets();
-  }, []);
+  }, [activeConfig]);
 
   if (brackets.length === 0) {
     return (

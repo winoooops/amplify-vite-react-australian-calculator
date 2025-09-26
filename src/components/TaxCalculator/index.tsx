@@ -4,12 +4,9 @@ import SectionTitle from "../SectionTitle";
 import TaxResults from "./TaxResults";
 import TaxRateTable from "./TaxRateTable";
 import { Info } from "lucide-react";
-import { generateClient } from "aws-amplify/data";
-import { Schema } from "../../../amplify/data/resource";
 import { useEffect, useState } from "react";
+import { useTaxConfigs } from "../../shared/contexts/taxConfigsContext";
 import Skeleton from "./skeleton";
-
-const client = generateClient<Schema>();
 
 export type TaxConfigMetaData = {
   financialYearStart: number;
@@ -26,41 +23,23 @@ const defaultMeta: TaxConfigMetaData = {
 };
 
 function TaxCalculator() {
+  const { activeConfig } = useTaxConfigs();
   const [metaData, setMetaData] = useState<TaxConfigMetaData>(defaultMeta);
 
-  const getMetaData = async () => {
-    const { data, errors } = await client.models.TaxConfig.list({
-      filter: {
-        isActive: {
-          eq: true,
-        },
-      },
-      selectionSet: [
-        "financialYearStart",
-        "financialYearEnd",
-        "createdAt",
-        "version",
-      ],
-    });
-
-    if (errors && errors.length > 0) {
-      throw new Error(errors.map((err) => err.message).join(", "));
-    }
-
-    if (data && data.length === 0) {
-      console.error("plz contact admin to set up an active Tax configuration.");
-    }
-
-    setMetaData(data[0] as TaxConfigMetaData);
-  };
-
   useEffect(() => {
-    getMetaData();
+    if (activeConfig) {
+      setMetaData({
+        financialYearStart: activeConfig.financialYearStart,
+        financialYearEnd: activeConfig.financialYearEnd,
+        createdAt: activeConfig.lastUpdated || "2000-09-20", // Use lastUpdated as fallback
+        version: activeConfig.version,
+      });
+    }
 
     return () => setMetaData(defaultMeta);
-  }, []);
+  }, [activeConfig]);
 
-  if (metaData?.version === "-1") {
+  if (!activeConfig || activeConfig.version === "-1") {
     return (
       <Skeleton />
     );

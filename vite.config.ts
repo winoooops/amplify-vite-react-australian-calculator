@@ -12,5 +12,16 @@ export default defineConfig({
     }),
     tailwindcss(),
     react()
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'aws-amplify': ['aws-amplify', '@aws-amplify/ui-react'],
+          'vendor': ['react', 'react-dom'],
+          'router': ['@tanstack/react-router']
+        }
+      }
+    }
+  }
 });
