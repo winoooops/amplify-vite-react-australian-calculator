@@ -8,7 +8,7 @@ type Props = {
 };
 
 function Footer({ meta, children }: Props) {
-  const range = `${meta.financialYearStart}-${meta.financialYearEnd}`;
+  const range = `${meta?.financialYearStart ?? "2024"}-${meta?.financialYearEnd ?? "2025"}`;
   const title = `Tax Year ${range}`;
 
   return (

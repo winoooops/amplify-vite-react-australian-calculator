@@ -7,6 +7,7 @@ import { Info } from "lucide-react";
 import { generateClient } from "aws-amplify/data";
 import { Schema } from "../../../amplify/data/resource";
 import { useEffect, useState } from "react";
+import Skeleton from "./skeleton";
 
 const client = generateClient<Schema>();
 
@@ -59,15 +60,9 @@ function TaxCalculator() {
     return () => setMetaData(defaultMeta);
   }, []);
 
-  if (metaData.version === "-1") {
+  if (metaData?.version === "-1") {
     return (
-      <div className="animate-pulse flex-col text-center mb-12">
-        <div className="flex justify-center items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-slate-200 rounded-2xl"></div>
-          <div className="h-12 w-80 bg-slate-200 rounded-lg"></div>
-        </div>
-        <div className="h-6 w-96 bg-slate-200 rounded-lg mx-auto"></div>
-      </div>
+      <Skeleton />
     );
   }
 

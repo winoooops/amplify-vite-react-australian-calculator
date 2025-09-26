@@ -7,6 +7,9 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen.ts";
+import ErrorComponent from "./components/ErrorComponent.tsx";
+import { ErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
 
 Amplify.configure(outputs);
 
@@ -21,8 +24,11 @@ declare module "@tanstack/react-router" {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Authenticator socialProviders={["google", "amazon"]}>
-      <RouterProvider router={router} />
-    </Authenticator>
+    <ErrorBoundary FallbackComponent={ErrorComponent}>
+      <Authenticator socialProviders={["google", "amazon"]}>
+        <RouterProvider router={router} />
+      </Authenticator>
+    </ErrorBoundary>
+    <ToastContainer />
   </React.StrictMode>
 );

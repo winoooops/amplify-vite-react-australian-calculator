@@ -13,8 +13,8 @@ function Header({ meta }: { meta: TaxConfigMetaData }) {
         </h1>
       </div>
       <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-        Calculate your individual income tax for the {meta.financialYearStart}-
-        {meta.financialYearEnd} financial year with our comprehensive Australian
+        Calculate your individual income tax for the {meta?.financialYearStart ?? "2024"}-
+        {meta?.financialYearEnd ?? "2025"} financial year with our comprehensive Australian
         tax calculator
       </p>
     </header>

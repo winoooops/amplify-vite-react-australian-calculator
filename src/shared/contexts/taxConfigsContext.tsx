@@ -14,6 +14,7 @@ import {
   bracketsPreHandler,
 } from "../middlewares/mutations/bracketsCreationHandler";
 import { bracketsQueryHandler } from "../middlewares/mutations/bracketsQueryHandler";
+import { Bounce, toast } from "react-toastify";
 
 type TaxConfigsContextType = {
   history: TaxConfig[];
@@ -32,13 +33,13 @@ type TaxConfigsContextType = {
 
 export const TaxConfigsContext = createContext<TaxConfigsContextType>({
   history: [],
-  setHistory: () => {},
+  setHistory: () => { },
   isHistoryLoading: false,
   isDeleting: false,
   historyError: null,
-  fetchHistory: () => {},
-  handleDeleteConfig: () => {},
-  activateConfig: async () => {},
+  fetchHistory: () => { },
+  handleDeleteConfig: () => { },
+  activateConfig: async () => { },
   createTaxConfigWithBrackets: async () => {
     throw new Error("createTaxConfigWithBrackets is not initialized");
   },
@@ -214,7 +215,19 @@ export function TaxConfigsProvider({
     }
 
     if (data && data.length === 0) {
+      toast.error('plz contact admin to set up an active Tax configuration.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
       return null;
+
     }
 
     const brackets = (await bracketsQueryHandler(client, data[0].id)).sort(
